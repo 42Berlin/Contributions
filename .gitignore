@@ -1,0 +1,13 @@
+front/ssl/*
+front/node_modules
+front/.vscode
+.env
+*/.env
+**/.env
+node_modules
+**/*.pyc
+*.crt
+*.key
+nginx/ssl/*
+back/app/projects.json
+back/app/projects_users.json

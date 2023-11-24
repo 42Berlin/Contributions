@@ -1,0 +1,26 @@
+---
+import chroma from 'chroma-js';
+
+const {level, special, text, today, max} = Astro.props
+
+const color_scale = chroma.scale(['#161b22', '#39d353'])
+const border_scale = chroma.scale(['#161b22', '#43d55b'])
+
+const color_css = today ? 'lightblue' : special ? 'yellow': border_scale(level / (max * 2 / 3)).hex()
+
+---
+
+<div class="gh-box" style=`background-color: ${color_scale(level / max).hex()}; border-color: ${color_css}`>
+	{text}
+</div>
+
+<style>
+	.gh-box {
+		border: 5px solid;
+		border-radius: 15px;
+		width: 10%;
+		height: 10%;
+		aspect-ratio: 1 / 1;
+		margin: 15px;
+	}
+</style>

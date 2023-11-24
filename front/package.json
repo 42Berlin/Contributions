@@ -1,0 +1,29 @@
+{
+  "name": "front",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "nodemon --exitcrash --exec \"astro dev --host 0.0.0.0 --port 443\" --watch \"src\" --ext \"astro,md,js,json\"",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^5.3.0",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
+    "astro": "^2.8.4",
+    "chroma-js": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/chroma-js": "^2.4.0",
+    "@types/luxon": "^3.3.1",
+    "luxon": "^3.3.0",
+    "socket.io-client": "^4.7.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "*.astro"
+    ]
+  }
+}

@@ -1,0 +1,94 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Calendar from '../layouts/Calendar.astro';
+import ProjectDisplay from '../layouts/ProjectDisplay.astro';
+
+type Project = {
+	project_name: string,
+	team_name: string,
+	special: boolean,
+	validated_at: Date,
+	xp: number,
+	mark: number,
+}
+
+const project_url = 'https://contributions.42berlin.de/api/projects'
+
+let projects_fetched_json = await fetch(project_url, {
+	headers: {
+		'Authorization': `Bearer ${import.meta.env.SECRET_TOKEN}`
+	}
+})
+
+let projects_fetched = await projects_fetched_json.json()
+
+let projects: Project[] = []
+
+for (let x of projects_fetched) {
+	projects.push({
+		...x,
+		validated_at: new Date(x.validated_at)
+	})
+}
+
+projects.sort((a: Project, b: Project) => {
+	return b.validated_at.getTime() - a.validated_at.getTime()
+})
+
+projects = projects.slice(0, 7)
+
+---
+
+<Layout title="Contributions">
+	<main>
+		<h1>42Berlin student project passed</h1>
+		<Calendar />
+		<div class="project-holder">
+			{projects.map((p: Project) => {
+				return <ProjectDisplay
+					title={p.project_name}
+					special={p.special}
+					team_name={p.team_name}
+					date={p.validated_at.getTime()}
+					xp={p.xp * (p.mark / 100)}
+					first={p == projects[0]}
+				/>
+			})}
+		</div>
+	</main>
+</Layout>
+  
+<style>
+	main {
+		width: 1080px;
+		height: 1920px;
+		display: flex;
+		flex-direction: column;
+		background-color: rgb(13, 17, 23);
+	}
+	h1 {
+		font-size: 3rem;
+		font-weight: 800;
+		margin: 0;
+		width: 100%;
+		text-align: center;
+		color: white;
+		flex: 4% 0 0;
+		justify-content: center;
+		align-items: center;
+		margin-top: 20px;
+	}
+	.project-holder {
+		display: flex;
+		flex-shrink: 0;
+		flex-grow: 0;
+		flex-direction: column;
+		flex-basis: 47%;
+		max-height: 47% !important;
+		margin: 10px;
+		justify-content: space-around;
+		padding: 15px;
+		overflow: hidden;
+		margin-bottom: 500px;
+	}
+</style>

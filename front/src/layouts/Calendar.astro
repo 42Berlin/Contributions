@@ -1,0 +1,131 @@
+---
+import { type } from "os"
+import Box from "./Box.astro"
+
+type Day = {
+	date: Date,
+	project_passed: number,
+	special_passed: boolean,
+}
+
+type Week_real<T extends Day> = [T, T, T, T, T, T, T]
+
+type Week = Week_real<Day>
+
+function fill_tab(): Week {
+	let t: Day = {
+		date: new Date(2042, 0, 0),
+		project_passed: 0,
+		special_passed: false,
+	}
+
+	return [t, t, t, t, t, t, t];
+}
+
+function get_weeks(days: Day[]): Week[] {
+	let week: Week = fill_tab()
+	let res: Week[] = []
+
+	for (let day of days) {
+		if (day.date.getDay() == 0) {
+			res = [...res, week]
+			week = fill_tab()
+		}
+		week[day.date.getDay()] = day;
+	}
+	res = [...res, week]
+
+	res = res.splice(1, 5)
+	return res;
+}
+
+let today = new Date()
+today.setHours(0)
+today.setMinutes(0)
+today.setSeconds(0)
+today.setMilliseconds(0)
+
+const project_url = 'https://contributions.42berlin.de/api/days'
+
+let days_json = await fetch(project_url, {
+	headers: {
+		'Authorization': `Bearer ${import.meta.env.SECRET_TOKEN}`
+	}
+})
+
+let data = await days_json.json()
+
+let days: Day[] = []
+
+for (let x of data) {
+	days.push({
+		...x,
+		date: new Date(x.date)
+	})
+}
+
+days.sort((a: Day, b: Day) => {
+	return a.date.getTime() - b.date.getTime()
+})
+
+const days_otw = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+days = days.splice(50 - (4 * 7) - today.getDay(), 50)
+
+let weeks: Week[] = get_weeks(days)
+
+let max: number = 0;
+
+for (const x of data) {
+	if (x.project_passed > max) {
+		max = x.project_passed
+	}
+}
+---
+
+<div class="wrapper">
+	{
+		<div style={{
+			display: 'flex',
+			'flex-direction': 'row',
+			'justify-content': 'space-around',
+			'margin-right': 'auto',
+			'margin-left': 'auto',
+		}}>
+		{days_otw.map((s: string) => {
+			return <div class="days">{s}</div>
+		})}
+		</div>
+	}
+	{weeks.map((wk: Week) => {
+		return <div style={{
+			display: 'flex',
+			'flex-direction': 'row',
+			'justify-content': 'space-between',
+			'margin-right': 'auto',
+			'margin-left': 'auto',
+		}}>
+			{wk.map((day: Day) => {
+				return <Box level={day.project_passed}
+							special={day.special_passed}
+							today={day.date.getTime() === today.getTime()}
+							max={max}
+							/>
+			})}
+		</div>
+	})}
+</div>
+
+<style> .wrapper {
+		border-radius: 10px;
+		/* background-color: #161b22; */
+		margin: 15px;
+		flex: 45% 0 0;
+		margin-bottom: 0;
+	}
+	.days {
+		color: white;
+		width: 10%;
+		text-align: center;
+	}
+</style>

@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  nginx:
+    build:
+      context: ${PWD}/nginx
+      dockerfile: Dockerfile
+    ports:
+      - 443:443
+
+  front:
+    build:
+      context: ${PWD}/front
+      dockerfile: Dockerfile
+    volumes:
+      - './front:/app'
+
+  back:
+    build:
+      context: ${PWD}/back
+      dockerfile: Dockerfile
+    env_file:
+      - './back/.env'
+    volumes:
+      - './back:/code'
+    ports:
+      - 3000:3000

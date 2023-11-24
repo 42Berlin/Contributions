@@ -1,0 +1,74 @@
+---
+import chroma from 'chroma-js';
+import { DateTime } from 'luxon';
+
+const {title, special, team_name, date, xp, first} = Astro.props
+
+let date_real = DateTime.fromMillis(date, { zone: 'utc' })
+date_real = date_real.setZone('Europe/Berlin')
+const color_scale = chroma.scale(['#161b22', '#39d353'])
+const border_scale = chroma.scale(['#161b22', '#43d55b'])
+const color = Math.log(xp) - 5
+
+let date_str = date_real.day + '/' + (date_real.month + 1)
+date_str += ' ' + date_real.hour.toString().padStart(2,'0') + ':'
+date_str += date_real.minute.toString().padStart(2,'0')
+
+let animation_str = first ? 'animation: myAnim 1s ease 0s 1 normal forwards;' : ''
+---
+
+<div
+	class="project-display"
+	style=`background-color: ${color_scale(color / 5).hex()}; border-color: ${border_scale(color / 3).hex()}; ${animation_str}`
+	>
+	<h1>{team_name}</h1>
+	<h2>{title}</h2>
+	<p class="date">{date_str}</p>
+</div>
+
+<style>
+	.project-display {
+		color: whitesmoke;
+		border: 5px solid;
+		border-radius: 5px;
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 15px;
+		padding-left: 20px;
+		padding-right: 20px;
+		justify-content: space-between;
+		background-color: #1e422d;
+		height: 100px;
+		min-height: 100px;
+		max-height: 100px;
+	}
+	.project-display * {
+		margin-top: auto;
+		margin-bottom: auto;
+	}
+	.project-display h1 {
+		flex-basis: 45%;
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
+	.project-display h2 {
+		flex-basis: 40%;
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
+	.project-display .date {
+		text-align: right;
+		flex-grow: 1;
+	}
+	@keyframes myAnim {
+		0% {
+			opacity: 0.5;
+			transform: translateY(-42px);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>
