@@ -22,9 +22,14 @@ def pretty_json(json_data):
 
 def get_intra_projects():
     with open('/code/app/projects.json', 'r') as f:
-        projects = json.load(f)
+        try:
+            projects = json.load(f)
+        except Exception as e:
+            print("Could not load JSON data from /code/app/projects.json .")
+            print(f"Exception: {e}")
+            return None
         f.close()
-    
+
     return projects
 
 SPECIAL_PROJECTS = [
@@ -52,10 +57,20 @@ def get_projects(req: Request):
         return Response("Not authorized.", 403)
 
     with open('/code/app/projects_users.json', 'r') as f:
-        data = json.load(f)
+        try:
+            data = json.load(f)
+        except Exception as e:
+            print("Could not load JSON data from /code/app/projects_users.json .")
+            print(f"Exception: {e}")
+
+            return None
+
         f.close()
 
     projects = get_intra_projects()
+
+    if not projects:
+        return None
 
     for x in data:
         if x["user"]["staff?"]:

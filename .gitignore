@@ -11,3 +11,4 @@ node_modules
 nginx/ssl/*
 back/app/projects.json
 back/app/projects_users.json
+*.log
