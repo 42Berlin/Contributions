@@ -10,7 +10,7 @@ const color_scale = chroma.scale(['#161b22', '#39d353'])
 const border_scale = chroma.scale(['#161b22', '#43d55b'])
 const color = Math.log(xp) - 5
 
-let date_str = date_real.day + '/' + (date_real.month + 1)
+let date_str = date_real.day + '/' + (date_real.month)
 date_str += ' ' + date_real.hour.toString().padStart(2,'0') + ':'
 date_str += date_real.minute.toString().padStart(2,'0')
 
